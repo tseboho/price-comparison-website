@@ -1,0 +1,16 @@
+[project]
+name = "price-comparison-app"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.0.3",
+    "pydantic>=2.9.2",
+    "requests>=2.32.3",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "ipython>=8.29.0",
+]
