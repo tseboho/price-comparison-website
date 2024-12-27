@@ -1,4 +1,6 @@
 import requests
+import urllib.parse
+from typing import Final
 
 from src.obj import ItemSearchResult
 
@@ -7,21 +9,43 @@ def product_search(user_query: str, max_n_items: int) -> list[ItemSearchResult]:
     """
     Search for a product on www.woolworths.co.za
     """
+    req_params: dict = {
+        "Accept": "application/json",
+        "pageURL": "/cat",
+        "Ntt": user_query,
+        "Dy": 1,
+    }
+    req_headers: dict = {
+        "User-Agent": "Please let me in",
+        "Referer": "https://www.woolworths.co.za/cat",
+        "X-requested-by": "Woolworths Online",
+    }
     response = requests.get(
         url="https://www.woolworths.co.za/server/searchCategory",
-        params={
-            "pageURL": "/cat",
-            "Ntt": user_query,
-            "Dy": 1,
-        },
-        headers={
-            "User-Agent": "Please let me in",
-            "referer": "https://www.woolworths.co.za/cat",
-        },
+        params=req_params,
+        headers=req_headers,
     )
-    items_info_raw: list[dict] = response.json()["contents"][0]["mainContent"][0][
-        "contents"
-    ][0]["records"]
+    MAX_N_REDIRECTS: Final[int] = 10
+    for _ in range(MAX_N_REDIRECTS):
+        response_json: dict = response.json()
+        response_content: dict
+        if isinstance(response_json["contents"], list):
+            response_content = response_json["contents"][0]
+        else:
+            response_content = response_json["contents"]
+        if response_content["@type"] == "Redirect":
+            redirect_url: str = response_content["redirectURL"]
+            parsed_redirect_url = urllib.parse.urlparse(redirect_url)
+            response = requests.get(
+                url=f"https://www.woolworths.co.za/server/searchCategory",
+                params={"pageURL": parsed_redirect_url.path},
+                headers=req_headers,
+            )
+        else:
+            break
+    items_info_raw: list[dict] = response_content["mainContent"][0]["contents"][0][
+        "records"
+    ]
     if len(items_info_raw) > max_n_items:
         items_info_raw = items_info_raw[:max_n_items]
 
