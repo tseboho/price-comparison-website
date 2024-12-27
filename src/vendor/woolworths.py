@@ -5,7 +5,7 @@ from src.obj import ItemSearchResult
 
 def product_search(user_query: str, max_n_items: int) -> list[ItemSearchResult]:
     """
-    TODO
+    Search for a product on www.woolworths.co.za
     """
     response = requests.get(
         url="https://www.woolworths.co.za/server/searchCategory",
@@ -33,4 +33,11 @@ def product_search(user_query: str, max_n_items: int) -> list[ItemSearchResult]:
         }
         for item in items_info_raw
     ]
-    return items_info
+    return [
+        ItemSearchResult(
+            item_title=item.get("item_title"),
+            item_image_url=item.get("item_image_url"),
+            price_cents=int(100 * item["item_prices"].get("p_pl00")),
+        )
+        for item in items_info
+    ]
