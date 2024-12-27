@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "flask>=3.0.3",
+    "fastapi>=0.115.6",
     "pydantic>=2.9.2",
     "requests>=2.32.3",
 ]
