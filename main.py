@@ -1,21 +1,29 @@
-import src.vendor.picknpay
-import src.vendor.woolworths
+import fastapi
+import fastapi.responses
+import fastapi.staticfiles
 
-import json
+app = fastapi.FastAPI()
 
-print(
-    json.dumps(
-        src.vendor.woolworths.product_search(
-            user_query="croissant",
-            max_n_items=4,
-        ),
-        indent=4,
-        default=str,
-    )
+app.mount(
+    "/static",
+    fastapi.staticfiles.StaticFiles(directory="static"),
+    name="static",
 )
 
-for x in src.vendor.picknpay.product_search(
-    user_query="croissant",
-    max_n_items=4,
+
+@app.get("/", response_class=fastapi.responses.HTMLResponse)
+def index():
+    with open("templates/index.html", "r", encoding="utf-8") as file:
+        html: str = file.read()
+    return fastapi.responses.HTMLResponse(content=html)
+
+
+@app.get("/product-search")
+def product_search(
+    query: str = fastapi.Query(None, description="Product search keywords")
 ):
-    print(x)
+    return {
+        "checkers": query,
+        "picknpay": query,
+        "woolworths": query,
+    }

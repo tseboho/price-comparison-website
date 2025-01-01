@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Comparison</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <form id="searchForm">
+        <input type="text" id="searchQueryInput" name="searchQuery" value="search keywords here" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="searchResult"></div>
+    <script>
+        document.getElementById("searchForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent form submission from reloading the page
+            const searchQuery = document.getElementById("searchQueryInput").value.trim();
+            const url = `http://0.0.0.0:8000/product-search?query=${encodeURIComponent(searchQuery)}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const jsonResponse = await response.json();
+
+                // Pretty-print the JSON onto the web page
+                document.getElementById("searchResult").textContent = JSON.stringify(jsonResponse, null, 2);
+            } catch (error) {
+                document.getElementById("searchResult").textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
