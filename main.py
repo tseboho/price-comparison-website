@@ -1,6 +1,10 @@
+from typing import Final
+
 import fastapi
 import fastapi.responses
 import fastapi.staticfiles
+
+from src.vendor import checkers, picknpay, woolworths
 
 app = fastapi.FastAPI()
 
@@ -22,8 +26,28 @@ def index():
 def product_search(
     query: str = fastapi.Query(None, description="Product search keywords")
 ):
-    return {
-        "checkers": query,
-        "picknpay": query,
-        "woolworths": query,
+    MAX_N_ITEMS: Final[int] = 8
+    search_results: dict = {
+        "checkers": [
+            x.model_dump()
+            for x in checkers.product_search(
+                user_query=query,
+                max_n_items=MAX_N_ITEMS,
+            )
+        ],
+        "picknpay": [
+            x.model_dump()
+            for x in picknpay.product_search(
+                user_query=query,
+                max_n_items=MAX_N_ITEMS,
+            )
+        ],
+        "woolworths": [
+            x.model_dump()
+            for x in woolworths.product_search(
+                user_query=query,
+                max_n_items=MAX_N_ITEMS,
+            )
+        ],
     }
+    return search_results
