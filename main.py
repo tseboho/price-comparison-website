@@ -26,7 +26,7 @@ def index():
 def product_search(
     query: str = fastapi.Query(None, description="Product search keywords")
 ):
-    MAX_N_ITEMS: Final[int] = 8
+    MAX_N_ITEMS: Final[int] = 5
     search_results: dict = {
         "checkers": [
             x.model_dump()

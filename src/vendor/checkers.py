@@ -37,7 +37,7 @@ def product_search(user_query: str, max_n_items: int) -> list[ItemSearchResult]:
     return [
         ItemSearchResult(
             item_title=item.find(class_="product-listening-click").get("title").strip(),
-            item_image_url=f'https://www.checkers.co.za{item.find("img").get("data-original-src")}',
+            item_image_url=f'https://www.checkers.co.za{item.find(class_="item-product__image __image").find("img").get("data-original-src")}',
             price_cents=int(
                 item.find(class_="js-item-product-price")
                 .find(class_="now")
