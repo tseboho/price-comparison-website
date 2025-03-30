@@ -5,7 +5,7 @@
 To run this program, you need to install the following packages:
 
 ```bash
-pip install fastapi uvicorn requests beautifulsoup4
+pip install -r requirements.txt
 ```
 
 Note: The `uv` command is a shorthand for `uvicorn`, which is used to run ASGI applications.
